@@ -51,15 +51,6 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
-    body: { language },
-    initialMessages: [
-      {
-        id: "welcome",
-        role: "assistant",
-        content: t.aiGreeting,
-        parts: [{ type: "text", text: t.aiGreeting }],
-      },
-    ],
   })
 
   // Scroll to bottom when new messages arrive
