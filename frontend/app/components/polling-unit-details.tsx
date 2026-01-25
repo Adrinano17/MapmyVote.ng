@@ -171,7 +171,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
                     <div className="flex h-80 items-center justify-center bg-muted">
                       <div className="text-center">
                         <MapPin className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
-                        <p className="text-muted-foreground">{t.mapNotAvailable}</p>
+                        <p className="text-muted-foreground">Map not available</p>
                       </div>
                     </div>
                   )}
