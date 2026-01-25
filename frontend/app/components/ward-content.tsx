@@ -28,7 +28,7 @@ export function WardContent({ ward, pollingUnits }: WardContentProps) {
             className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t.backTo} {t.home}
+            Back to {t.home}
           </Link>
 
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

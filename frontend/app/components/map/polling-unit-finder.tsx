@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import { validatePollingUnitCode, findPollingUnitByCode } from "@/lib/polling-unit-validator"
 import type { PollingUnit, Ward } from "@/lib/types"
@@ -67,9 +67,9 @@ export function PollingUnitFinder({ onPollingUnitFound }: PollingUnitFinderProps
           <MapPin className="h-5 w-5 text-primary" />
           Find Your Polling Unit
         </CardTitle>
-        <CardDescription>
+        <p className="text-sm text-muted-foreground">
           Enter your 5-digit polling unit code (2 digits for ward + 3 digits for polling unit)
-        </CardDescription>
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

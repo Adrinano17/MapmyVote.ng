@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useNavigationState } from "@/hooks/use-navigation-state"
 import { useVoiceGuidance } from "@/hooks/use-voice-guidance"
 import { useLanguage } from "@/hooks/use-language"
-import { Navigation, MapPin, AlertCircle, CheckCircle, ArrowRight } from "lucide-react"
+import { Navigation, MapPin, AlertCircle, CheckCircle, ArrowRight, Mic } from "lucide-react"
 import { getNextInstruction, generateLandmarkInstructions } from "@/lib/navigation-instructions"
 import { getNextTurnByTurnInstruction, type RouteStep } from "@/lib/turn-by-turn-navigation"
 import type { Language } from "@/lib/types"
@@ -166,7 +166,7 @@ export function StateNavigation({
           routeSteps,
           { lat: userLocation.latitude, lng: userLocation.longitude },
           distance,
-          language
+          (language === 'yo' || language === 'pcm') ? language : 'en'
         )
 
         // #region agent log

@@ -110,7 +110,7 @@ export function AboutContent() {
     },
   }
 
-  const content = aboutTexts[language]
+  const content = aboutTexts[language as keyof typeof aboutTexts] || aboutTexts.en
 
   return (
     <main className="flex-1">

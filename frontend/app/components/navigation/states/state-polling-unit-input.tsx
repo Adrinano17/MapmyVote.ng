@@ -8,7 +8,7 @@ import { useNavigationState } from "@/hooks/use-navigation-state"
 import { useVoiceGuidance } from "@/hooks/use-voice-guidance"
 import { useLanguage } from "@/hooks/use-language"
 import { validatePollingUnitCode } from "@/lib/polling-unit-validator"
-import { Hash, AlertCircle } from "lucide-react"
+import { Hash, AlertCircle, Mic } from "lucide-react"
 
 interface StatePollingUnitInputProps {
   simpleMode?: boolean

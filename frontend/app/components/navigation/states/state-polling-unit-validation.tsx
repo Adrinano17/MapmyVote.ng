@@ -59,9 +59,9 @@ export function StatePollingUnitValidation() {
 
     const result = await validatePollingUnitExists(parts[0], parts[1])
 
-    if (result.exists && result.data) {
+    if (result.exists && result.pollingUnit) {
       setStatus("valid")
-      setPollingUnitData(result.data)
+      setPollingUnitData(result.pollingUnit)
       validatePollingUnit(true)
     } else {
       setStatus("invalid")

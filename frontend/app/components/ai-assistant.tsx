@@ -153,7 +153,9 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
       setIsSpeaking(true)
       // Use OpenAI TTS
       const { speakWithOpenAI } = await import("@/lib/huggingface-voice")
-      await speakWithOpenAI(cleanText, language)
+      // Map language to supported TTS languages (en, yo, pcm)
+      const ttsLanguage = (language === 'yo' || language === 'pcm') ? language : 'en'
+      await speakWithOpenAI(cleanText, ttsLanguage as 'en' | 'yo' | 'pcm')
       setIsSpeaking(false)
     } catch (error) {
       console.error("OpenAI TTS error, falling back to browser TTS:", error)

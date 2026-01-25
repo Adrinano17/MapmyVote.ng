@@ -186,7 +186,7 @@ export function StateLocationPermission() {
         isRequestingLocationRef.current = false
         
         // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'state-location-permission.tsx:130',message:'Location permission denied',data:{error:error.message,code:error.code,errorName:error.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run16',hypothesisId:'V'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'state-location-permission.tsx:130',message:'Location permission denied',data:{error:error.message,code:error.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run16',hypothesisId:'V'})}).catch(()=>{});
         // #endregion
         setPermissionStatus("denied")
       },

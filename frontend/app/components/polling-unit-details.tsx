@@ -40,7 +40,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
             className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t.backTo} {pollingUnit.ward?.name || t.home}
+            Back to {pollingUnit.ward?.name || t.home}
           </Link>
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -86,7 +86,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
               )}
               <Button variant="outline" className="gap-2 bg-transparent" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
-                {t.share}
+                Share
               </Button>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
             <div className="space-y-4 lg:col-span-1">
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="mb-4 font-semibold text-foreground">{t.pollingUnitDetails}</h2>
+                  <h2 className="mb-4 font-semibold text-foreground">Polling Unit Details</h2>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -120,7 +120,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
                         <MapPin className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">{t.location}</p>
+                        <p className="text-sm text-muted-foreground">Location</p>
                         <p className="font-semibold text-foreground">{pollingUnit.address || t.lgaLabel}</p>
                       </div>
                     </div>
@@ -130,7 +130,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
                         <Calendar className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">{t.votingHours}</p>
+                        <p className="text-sm text-muted-foreground">Voting Hours</p>
                         <p className="font-semibold text-foreground">8:30 AM - 2:30 PM</p>
                       </div>
                     </div>
@@ -141,14 +141,14 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
               {hasCoordinates && (
                 <Card>
                   <CardContent className="p-6">
-                    <h2 className="mb-4 font-semibold text-foreground">{t.coordinates}</h2>
+                    <h2 className="mb-4 font-semibold text-foreground">Coordinates</h2>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t.latitude}</span>
+                        <span className="text-muted-foreground">Latitude</span>
                         <span className="font-mono text-foreground">{pollingUnit.latitude}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t.longitude}</span>
+                        <span className="text-muted-foreground">Longitude</span>
                         <span className="font-mono text-foreground">{pollingUnit.longitude}</span>
                       </div>
                     </div>

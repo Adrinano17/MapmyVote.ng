@@ -68,15 +68,20 @@ export async function POST(req: Request) {
 
     // #region agent log
     try {
-      await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:66',message:'Chat API body received',data:{hasMessages:!!messages,messagesType:typeof messages,messagesIsArray:Array.isArray(messages),messagesLength:messages?.length,bodyKeys:Object.keys(body),firstMessage:messages?.[0] ? {id:messages[0].id,role:messages[0].role,hasContent:!!messages[0].content,hasParts:!!messages[0].parts,contentType:typeof messages[0].content,partsType:typeof messages[0].parts,partsIsArray:Array.isArray(messages[0].parts)} : null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    } catch {}
+      const firstMsg = messages?.[0] as any;
+      await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:66',message:'Chat API body received',data:{hasMessages:!!messages,messagesType:typeof messages,messagesIsArray:Array.isArray(messages),messagesLength:messages?.length,bodyKeys:Object.keys(body),firstMessage:firstMsg ? {id:firstMsg.id,role:firstMsg.role,hasContent:!!firstMsg.content,hasParts:!!firstMsg.parts} : null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    } catch (_) {
+      // Ignore logging errors
+    }
     // #endregion
 
     if (!messages || !Array.isArray(messages)) {
       // #region agent log
       try {
         await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:72',message:'Chat API invalid messages',data:{messages,body},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      } catch {}
+      } catch (_) {
+      // Ignore logging errors
+    }
       // #endregion
       return new Response(
         JSON.stringify({ 
@@ -157,7 +162,9 @@ export async function POST(req: Request) {
     // #region agent log
     try {
       await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:129',message:'Chat API request received',data:{messageCount:messages.length,language,hasApiKey:!!OPENAI_API_KEY,hasContext:!!context},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    } catch {}
+    } catch (_) {
+      // Ignore logging errors
+    }
     // #endregion
 
     // Normalize messages format for convertToModelMessages
@@ -193,11 +200,14 @@ export async function POST(req: Request) {
       return msg
     })
 
-    // #region agent log
-    try {
-      await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:163',message:'Normalized messages before convertToModelMessages',data:{originalLength:messages.length,normalizedLength:normalizedMessages.length,firstNormalized:normalizedMessages[0] ? {id:normalizedMessages[0].id,role:normalizedMessages[0].role,hasContent:!!normalizedMessages[0].content,hasParts:!!normalizedMessages[0].parts,partsIsArray:Array.isArray(normalizedMessages[0].parts)} : null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    } catch {}
-    // #endregion
+      // #region agent log
+      try {
+        const firstNormalized = normalizedMessages[0] as any;
+        await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:163',message:'Normalized messages before convertToModelMessages',data:{originalLength:messages.length,normalizedLength:normalizedMessages.length,firstNormalized:firstNormalized ? {id:firstNormalized.id,role:firstNormalized.role,hasParts:!!firstNormalized.parts,partsIsArray:Array.isArray(firstNormalized.parts)} : null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      } catch (_) {
+        // Ignore logging errors
+      }
+      // #endregion
 
     let modelMessages
     try {
@@ -205,13 +215,17 @@ export async function POST(req: Request) {
       // #region agent log
       try {
         await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:175',message:'convertToModelMessages succeeded',data:{modelMessagesLength:modelMessages.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      } catch {}
+      } catch (_) {
+      // Ignore logging errors
+    }
       // #endregion
     } catch (convertError: any) {
       // #region agent log
       try {
         await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:180',message:'convertToModelMessages failed',data:{error:convertError.message,stack:convertError.stack?.substring(0,300),normalizedMessages:JSON.stringify(normalizedMessages)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      } catch {}
+      } catch (_) {
+      // Ignore logging errors
+    }
       // #endregion
       throw convertError
     }
@@ -378,7 +392,9 @@ export async function POST(req: Request) {
     // #region agent log
     try {
       await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:359',message:'Chat API returning stream response',data:{hasResult:!!result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    } catch {}
+    } catch (_) {
+      // Ignore logging errors
+    }
     // #endregion
     return result.toUIMessageStreamResponse()
   } catch (error: any) {
@@ -387,7 +403,9 @@ export async function POST(req: Request) {
     // #region agent log
     try {
       await fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'chat/route.ts:296',message:'Chat API error',data:{error:error.message,stack:error.stack?.substring(0,200),type:error.constructor.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    } catch {}
+    } catch (_) {
+      // Ignore logging errors
+    }
     // #endregion
     return new Response(
       JSON.stringify({ 

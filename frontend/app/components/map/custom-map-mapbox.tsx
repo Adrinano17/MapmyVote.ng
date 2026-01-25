@@ -157,8 +157,8 @@ export function CustomMapMapbox({
     })
     // #endregion
     
-    map.current.on("error", (e) => {
-      const errorMessage = e.error?.message || e.message || 'Unknown error'
+    map.current.on("error", (e: any) => {
+      const errorMessage = e.error?.message || 'Unknown error'
       const errorType = e.error?.type || e.type
       const errorCode = e.error?.status || e.status
       
