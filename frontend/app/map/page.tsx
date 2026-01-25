@@ -39,6 +39,9 @@ async function MapPageContent({ searchParams }: MapPageProps) {
       pollingUnits={
         pollingUnits?.map((pu) => ({
           ...pu,
+          address: pu.address ?? undefined,
+          latitude: pu.latitude ?? undefined,
+          longitude: pu.longitude ?? undefined,
           ward: pu.ward || undefined,
         })) || []
       }

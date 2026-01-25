@@ -45,8 +45,12 @@ export async function playAudioBuffer(audioBuffer: AudioBuffer): Promise<void> {
       source.connect(audioContext.destination)
 
       source.onended = () => resolve()
-      source.onerror = (error) => reject(error)
-      source.start()
+      try {
+        source.start()
+      } catch (error) {
+        reject(error)
+        return
+      }
 
       // Auto-stop after 30 seconds max
       setTimeout(() => {

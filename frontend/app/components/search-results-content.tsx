@@ -38,13 +38,13 @@ export function SearchResultsContent({ query, pollingUnits }: SearchResultsConte
             <div className="rounded-xl border border-dashed border-border p-12 text-center">
               <SearchIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <h3 className="mb-2 font-semibold text-foreground">{t.searchPrompt}</h3>
-              <p className="text-sm text-muted-foreground">{t.step1Desc}</p>
+              <p className="text-sm text-muted-foreground">Enter a polling unit name, code, or ward to search</p>
             </div>
           ) : (
             <>
               <div className="mb-6 flex items-center justify-between">
                 <p className="text-muted-foreground">
-                  {pollingUnits.length} {t.resultsFor} &quot;{query}&quot;
+                  {pollingUnits.length} results for &quot;{query}&quot;
                 </p>
                 {pollingUnits.length > 0 && (
                   <Link href={`/map?q=${encodeURIComponent(query)}`}>
@@ -71,11 +71,11 @@ export function SearchResultsContent({ query, pollingUnits }: SearchResultsConte
               ) : (
                 <div className="rounded-xl border border-dashed border-border p-12 text-center">
                   <SearchIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                  <h3 className="mb-2 font-semibold text-foreground">{t.noResults}</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">{t.noResultsSubtitle}</p>
+                  <h3 className="mb-2 font-semibold text-foreground">No results found</h3>
+                  <p className="mb-4 text-sm text-muted-foreground">Try a different search term or browse the map</p>
                   <Link href="/">
                     <Button variant="outline" className="bg-transparent">
-                      {t.tryAgain}
+                      Try Again
                     </Button>
                   </Link>
                 </div>

@@ -86,8 +86,8 @@ export function WardContent({ ward, pollingUnits }: WardContentProps) {
           ) : (
             <div className="rounded-xl border border-dashed border-border p-12 text-center">
               <MapPin className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 font-semibold text-foreground">{t.noResults}</h3>
-              <p className="text-sm text-muted-foreground">{t.noResultsSubtitle}</p>
+              <h3 className="mb-2 font-semibold text-foreground">No polling units found</h3>
+              <p className="text-sm text-muted-foreground">This ward may not have polling units assigned yet</p>
             </div>
           )}
         </div>

@@ -48,8 +48,8 @@ export function SearchBox({ initialQuery = "", size = "default" }: SearchBoxProp
     }
 
     const SpeechRecognition =
-      (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition ||
-      window.SpeechRecognition
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition
     recognitionRef.current = new SpeechRecognition()
 
     recognitionRef.current.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
@@ -111,8 +111,8 @@ export function SearchBox({ initialQuery = "", size = "default" }: SearchBoxProp
       }
       // Reinitialize if somehow lost - need to set up event handlers too
       const SpeechRecognition =
-        (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition ||
-        window.SpeechRecognition
+        (window as any).webkitSpeechRecognition ||
+        (window as any).SpeechRecognition
       recognitionRef.current = new SpeechRecognition()
       recognitionRef.current.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
       recognitionRef.current.interimResults = false

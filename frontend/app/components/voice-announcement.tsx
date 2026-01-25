@@ -20,13 +20,13 @@ export function VoiceAnnouncement({ pollingUnit }: VoiceAnnouncementProps) {
 
     switch (language) {
       case "yo":
-        return `Orúkọ ibi ìdìbò rẹ ni ${pollingUnit.name}. Koodu rẹ̀ ni ${pollingUnit.code}. Ó wà ní wọ́dù ${wardName}. Àwọn ènìyàn tí wọ́n forúkọ sílẹ̀ jẹ́ ${pollingUnit.registered_voters || 0}. Àdírẹ́sì rẹ̀ ni ${pollingUnit.address || "Ibadan North"}. ${t.directions}`
+        return `Orúkọ ibi ìdìbò rẹ ni ${pollingUnit.name}. Koodu rẹ̀ ni ${pollingUnit.code}. Ó wà ní wọ́dù ${wardName}. Àwọn ènìyàn tí wọ́n forúkọ sílẹ̀ jẹ́ ${pollingUnit.registered_voters || 0}. Àdírẹ́sì rẹ̀ ni ${pollingUnit.address || "Ibadan North"}. ${t.getDirections}`
       case "pcm":
-        return `Your polling unit name na ${pollingUnit.name}. The code na ${pollingUnit.code}. E dey for ${wardName} ward. ${pollingUnit.registered_voters || 0} people don register for there. The address na ${pollingUnit.address || "Ibadan North"}. ${t.directions}`
+        return `Your polling unit name na ${pollingUnit.name}. The code na ${pollingUnit.code}. E dey for ${wardName} ward. ${pollingUnit.registered_voters || 0} people don register for there. The address na ${pollingUnit.address || "Ibadan North"}. ${t.getDirections}`
       default:
-        return `Your polling unit is ${pollingUnit.name}. The code is ${pollingUnit.code}. It is located in ${wardName} ward. There are ${pollingUnit.registered_voters || 0} registered voters. The address is ${pollingUnit.address || "Ibadan North"}. ${t.directions}`
+        return `Your polling unit is ${pollingUnit.name}. The code is ${pollingUnit.code}. It is located in ${wardName} ward. There are ${pollingUnit.registered_voters || 0} registered voters. The address is ${pollingUnit.address || "Ibadan North"}. ${t.getDirections}`
     }
-  }, [pollingUnit, language, t.directions])
+  }, [pollingUnit, language, t.getDirections])
 
   const speak = useCallback(() => {
     if (!("speechSynthesis" in window)) {

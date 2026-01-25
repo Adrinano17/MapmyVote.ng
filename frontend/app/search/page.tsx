@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SearchResultsContent } from "@/components/search-results-content"
+import type { PollingUnit, Ward } from "@/lib/types"
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string }>
@@ -45,7 +46,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <Suspense
         fallback={<div className="flex-1 flex items-center justify-center text-muted-foreground">Loading...</div>}
       >
-        <SearchResultsContent query={query} pollingUnits={pollingUnits} />
+        <SearchResultsContent 
+          query={query} 
+          pollingUnits={pollingUnits.map((pu) => ({
+            ...pu,
+            address: pu.address ?? undefined,
+            latitude: pu.latitude ?? undefined,
+            longitude: pu.longitude ?? undefined,
+            ward: pu.ward || null,
+          })) as Array<PollingUnit & { ward: Ward | null }>} 
+        />
       </Suspense>
       <Footer />
     </div>

@@ -315,10 +315,10 @@ function DirectionPageContent() {
         })() ? (
           <CustomMap
             pollingUnits={pollingUnitData ? [pollingUnitData] : []}
-            userLocation={userLocation}
-            selectedPollingUnit={pollingUnitData}
+            userLocation={userLocation || undefined}
+            selectedPollingUnit={pollingUnitData || undefined}
             routePolyline={routePolyline || undefined}
-            landmarks={landmarks}
+            landmarks={landmarks.map(l => ({ ...l, category: l.category || 'landmark' }))}
             center={mapCenter}
             zoom={15}
             simpleMode={simpleMode}
