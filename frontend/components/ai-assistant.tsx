@@ -12,7 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useLanguage } from "@/hooks/use-language"
 import { translations } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import type { SpeechRecognitionEvent } from "webkit-speech-api"
+
+// Define SpeechRecognitionEvent type locally (Web Speech API)
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
 
 interface AIAssistantProps {
   initialContext?: {

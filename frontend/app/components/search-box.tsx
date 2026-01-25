@@ -9,7 +9,12 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/hooks/use-language"
 import { translations } from "@/lib/types"
-import type { SpeechRecognitionEvent } from "webkit-speech-api"
+
+// Define SpeechRecognitionEvent type locally (Web Speech API)
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
 
 interface SearchBoxProps {
   initialQuery?: string
