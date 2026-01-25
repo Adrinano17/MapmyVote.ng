@@ -7,7 +7,13 @@ import { translations } from "@/lib/types"
 
 export function AboutContent() {
   const { language } = useLanguage()
-  const t = translations[language]
+  const t = 
+    language === "en" ? translations.en :
+    language === "yo" ? translations.yo :
+    language === "pcm" ? translations.pcm :
+    language === "ha" ? translations.en :
+    language === "ig" ? translations.en :
+    translations.en
 
   const aboutTexts = {
     en: {
@@ -110,7 +116,11 @@ export function AboutContent() {
     },
   }
 
-  const content = aboutTexts[language]
+  const content = 
+    language === "en" ? aboutTexts.en :
+    language === "yo" ? aboutTexts.yo :
+    language === "pcm" ? aboutTexts.pcm :
+    aboutTexts.en
 
   return (
     <main className="flex-1">

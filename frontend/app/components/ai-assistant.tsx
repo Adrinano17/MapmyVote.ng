@@ -67,7 +67,6 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
   const chatHook = aiAvailable
     ? useChat({
         transport: new DefaultChatTransport({ api: "/api/chat" }),
-        body: { language },
         initialMessages: [
           {
             id: "welcome",
