@@ -3,7 +3,35 @@
 import { MapPin, Users, Globe, Shield, Mic, Navigation, Bot } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { useLanguage } from "@/hooks/use-language"
-import { translations } from "@/lib/types"
+import { translations, type Language } from "@/lib/types"
+
+type AboutTextContent = {
+  title: string
+  subtitle: string
+  missionTitle: string
+  missionP1: string
+  missionP2: string
+  featuresTitle: string
+  interactiveMaps: string
+  interactiveMapsDesc: string
+  voiceSupport: string
+  voiceSupportDesc: string
+  turnByTurn: string
+  turnByTurnDesc: string
+  multilingual: string
+  multilingualDesc: string
+  accessible: string
+  accessibleDesc: string
+  accurateData: string
+  accurateDataDesc: string
+  aiAssistant: string
+  aiAssistantDesc: string
+  coverageTitle: string
+  coverageP1: string
+  coverageP2: string
+  disclaimerTitle: string
+  disclaimerText: string
+}
 
 export function AboutContent() {
   const { language } = useLanguage()
@@ -15,7 +43,7 @@ export function AboutContent() {
     language === "ig" ? translations.en :
     translations.en
 
-  const aboutTexts = {
+  const aboutTexts: Record<Language, AboutTextContent> = {
     en: {
       title: "About MapMyVote.ng",
       subtitle:
