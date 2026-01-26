@@ -201,12 +201,12 @@ export function MapView({ pollingUnits, wards, initialQuery = "", initialWard = 
 
       {/* List View Toggle (Mobile) */}
       <Sheet>
-        <SheetTrigger asChild>
+        <SheetTrigger>
           <Button size="icon" className="absolute bottom-20 left-4 z-10 h-12 w-12 rounded-full shadow-lg md:hidden">
             <List className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[70vh]">
+        <SheetContent className="h-[70vh]">
           <SheetHeader>
             <SheetTitle>
               {t.pollingUnits} ({filteredUnits.length})
@@ -259,7 +259,7 @@ export function MapView({ pollingUnits, wards, initialQuery = "", initialWard = 
                     </p>
                   )}
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {selectedUnit.registered_voters.toLocaleString()} {t.registeredVoters.toLowerCase()}
+                    {(selectedUnit.registered_voters || 0).toLocaleString()} {t.registeredVoters.toLowerCase()}
                   </p>
                 </div>
                 <button
