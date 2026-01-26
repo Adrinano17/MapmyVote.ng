@@ -95,6 +95,8 @@ export const translations = {
     contact: "Contact Us",
     reportIssue: "Report Issue",
     allRightsReserved: "All Rights Reserved",
+    locationError: "Unable to get your location. Please enable location services.",
+    mapNotAvailable: "Map coordinates not available",
   },
   yo: {
     home: "Ile",
@@ -157,6 +159,8 @@ export const translations = {
     contact: "Kàn Sí Wa",
     reportIssue: "Jábọ̀ Ìṣòro",
     allRightsReserved: "Gbogbo ẹ̀tọ́ ni a pamọ́",
+    locationError: "A kò lè rí ibi tí o wà. Jọ̀wọ́ gba àwọn iṣẹ́ ibi láààyè.",
+    mapNotAvailable: "Àwọn àmì maapu kò sí",
   },
   pcm: {
     home: "Haus",
