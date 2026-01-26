@@ -43,7 +43,7 @@ export function AboutContent() {
     language === "ig" ? translations.en :
     translations.en
 
-  const aboutTexts: Record<Language, AboutTextContent> = {
+  const aboutTexts = {
     en: {
       title: "About MapMyVote.ng",
       subtitle:
@@ -208,7 +208,7 @@ export function AboutContent() {
       disclaimerText:
         "MapMyVote.ng is an independent civic technology project and is not affiliated with the Independent National Electoral Commission (INEC) or any government body. While we strive to provide accurate and up-to-date information, we recommend voters verify their polling unit assignment through official INEC channels.",
     },
-  }
+  } as const satisfies Record<Language, AboutTextContent>
 
   const content = 
     language === "en" ? aboutTexts.en :
