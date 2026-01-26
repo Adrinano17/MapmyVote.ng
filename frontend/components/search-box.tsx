@@ -47,8 +47,8 @@ export function SearchBox({ initialQuery = "", size = "default" }: SearchBoxProp
     }
 
     const SpeechRecognition =
-      (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition ||
-      window.SpeechRecognition
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
 
     recognition.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
