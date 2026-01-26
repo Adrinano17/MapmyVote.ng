@@ -44,7 +44,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
             className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t.backTo} {pollingUnit.ward?.name || t.home}
+            Back to {pollingUnit.ward?.name || t.home}
           </Link>
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -89,7 +89,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
               )}
               <Button variant="outline" className="gap-2 bg-transparent" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
-                {t.share}
+                Share
               </Button>
             </div>
           </div>

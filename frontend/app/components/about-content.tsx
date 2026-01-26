@@ -114,12 +114,80 @@ export function AboutContent() {
       disclaimerText:
         "MapMyVote.ng na independent civic technology project and we no dey affiliated with INEC or any government body. Even though we dey try to give correct and current information, we advise voters make dem verify their polling unit through official INEC channels.",
     },
+    ha: {
+      title: "About MapMyVote.ng",
+      subtitle:
+        "A civic technology platform designed to help eligible voters in Ibadan North Local Government Area locate their assigned polling units with ease.",
+      missionTitle: "Our Mission",
+      missionP1:
+        "MapMyVote.ng was created to address a common challenge faced by Nigerian voters: difficulty in locating their assigned polling units. Many eligible voters, especially first-time voters and those who have relocated, struggle to find accurate information about where to cast their votes.",
+      missionP2:
+        "Our platform aims to reduce voter confusion, improve accessibility for all citizens, and ultimately encourage greater electoral participation in our democracy.",
+      featuresTitle: "Key Features",
+      interactiveMaps: "Interactive Maps",
+      interactiveMapsDesc: "View all polling units on an interactive map with precise coordinates",
+      voiceSupport: "Voice Support",
+      voiceSupportDesc: "Search and listen to information in English, Yoruba, or Pidgin",
+      turnByTurn: "Turn-by-Turn Directions",
+      turnByTurnDesc: "Get navigation assistance directly to your polling unit",
+      multilingual: "Multilingual",
+      multilingualDesc: "Full support for English, Yoruba, and Nigerian Pidgin",
+      accessible: "Accessible",
+      accessibleDesc: "Designed for all users, including those with disabilities",
+      accurateData: "Accurate Data",
+      accurateDataDesc: "Up-to-date polling unit information from official sources",
+      aiAssistant: "AI Assistant",
+      aiAssistantDesc: "Get help from Ìrànlọ́wọ́, your personal voting guide",
+      coverageTitle: "Current Coverage",
+      coverageP1:
+        "MapMyVote.ng currently covers Ibadan North Local Government Area in Oyo State, Nigeria. This includes all 12 electoral wards and their respective polling units.",
+      coverageP2:
+        "We are actively working to expand our coverage to other local government areas across Oyo State and eventually nationwide.",
+      disclaimerTitle: "Disclaimer",
+      disclaimerText:
+        "MapMyVote.ng is an independent civic technology project and is not affiliated with the Independent National Electoral Commission (INEC) or any government body. While we strive to provide accurate and up-to-date information, we recommend voters verify their polling unit assignment through official INEC channels.",
+    },
+    ig: {
+      title: "About MapMyVote.ng",
+      subtitle:
+        "A civic technology platform designed to help eligible voters in Ibadan North Local Government Area locate their assigned polling units with ease.",
+      missionTitle: "Our Mission",
+      missionP1:
+        "MapMyVote.ng was created to address a common challenge faced by Nigerian voters: difficulty in locating their assigned polling units. Many eligible voters, especially first-time voters and those who have relocated, struggle to find accurate information about where to cast their votes.",
+      missionP2:
+        "Our platform aims to reduce voter confusion, improve accessibility for all citizens, and ultimately encourage greater electoral participation in our democracy.",
+      featuresTitle: "Key Features",
+      interactiveMaps: "Interactive Maps",
+      interactiveMapsDesc: "View all polling units on an interactive map with precise coordinates",
+      voiceSupport: "Voice Support",
+      voiceSupportDesc: "Search and listen to information in English, Yoruba, or Pidgin",
+      turnByTurn: "Turn-by-Turn Directions",
+      turnByTurnDesc: "Get navigation assistance directly to your polling unit",
+      multilingual: "Multilingual",
+      multilingualDesc: "Full support for English, Yoruba, and Nigerian Pidgin",
+      accessible: "Accessible",
+      accessibleDesc: "Designed for all users, including those with disabilities",
+      accurateData: "Accurate Data",
+      accurateDataDesc: "Up-to-date polling unit information from official sources",
+      aiAssistant: "AI Assistant",
+      aiAssistantDesc: "Get help from Ìrànlọ́wọ́, your personal voting guide",
+      coverageTitle: "Current Coverage",
+      coverageP1:
+        "MapMyVote.ng currently covers Ibadan North Local Government Area in Oyo State, Nigeria. This includes all 12 electoral wards and their respective polling units.",
+      coverageP2:
+        "We are actively working to expand our coverage to other local government areas across Oyo State and eventually nationwide.",
+      disclaimerTitle: "Disclaimer",
+      disclaimerText:
+        "MapMyVote.ng is an independent civic technology project and is not affiliated with the Independent National Electoral Commission (INEC) or any government body. While we strive to provide accurate and up-to-date information, we recommend voters verify their polling unit assignment through official INEC channels.",
+    },
   }
 
   const content = 
     language === "en" ? aboutTexts.en :
     language === "yo" ? aboutTexts.yo :
     language === "pcm" ? aboutTexts.pcm :
+    language === "ha" ? aboutTexts.ha :
+    language === "ig" ? aboutTexts.ig :
     aboutTexts.en
 
   return (
