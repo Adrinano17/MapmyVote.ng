@@ -210,7 +210,7 @@ export function AboutContent() {
     },
   } as const satisfies Record<Language, AboutTextContent>
 
-  const content = 
+  const content: AboutTextContent = 
     language === "en" ? aboutTexts.en :
     language === "yo" ? aboutTexts.yo :
     language === "pcm" ? aboutTexts.pcm :
