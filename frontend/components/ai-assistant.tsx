@@ -53,6 +53,37 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   })
 
+  // Helper to extract content from message parts - handles all AI SDK formats
+  const extractMessageContent = (message: any): string => {
+    if (message.content) return message.content
+    if (message.parts && Array.isArray(message.parts)) {
+      return message.parts.map((part: any) => {
+        if (typeof part === 'string') return part
+        if (part?.text) return part.text
+        if (part?.content) return part.content
+        if (part?.type === 'text' && part?.text) return part.text
+        return ""
+      }).filter(Boolean).join("")
+    }
+    return ""
+  }
+
+  const speak = (text: string) => {
+    if (!voiceEnabled || typeof window === "undefined" || !window.speechSynthesis) return
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
+    utterance.rate = 0.9
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    window.speechSynthesis.speak(utterance)
+  }
+
   // Scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -62,11 +93,12 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
   useEffect(() => {
     if (voiceEnabled && messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
-      if (lastMessage.role === "assistant" && lastMessage.content) {
-        speak(lastMessage.content)
+      const messageContent = extractMessageContent(lastMessage)
+      if (lastMessage.role === "assistant" && messageContent) {
+        speak(messageContent)
       }
     }
-  }, [messages, voiceEnabled])
+  }, [messages, voiceEnabled, language])
 
   // Get user location for navigation
   useEffect(() => {
@@ -125,23 +157,7 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
     }, 10000) // Update every 10 seconds
 
     return () => clearInterval(interval)
-  }, [isNavigating, userLocation, initialContext])
-
-  const speak = (text: string) => {
-    if (!voiceEnabled || typeof window === "undefined" || !window.speechSynthesis) return
-
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel()
-
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
-    utterance.rate = 0.9
-    utterance.onstart = () => setIsSpeaking(true)
-    utterance.onend = () => setIsSpeaking(false)
-    utterance.onerror = () => setIsSpeaking(false)
-
-    window.speechSynthesis.speak(utterance)
-  }
+  }, [isNavigating, userLocation, initialContext, speak, t, sendMessage])
 
   const toggleVoiceInput = () => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
@@ -150,8 +166,8 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
     }
 
     const SpeechRecognition =
-      (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition ||
-      window.SpeechRecognition
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
 
     recognition.lang = language === "yo" ? "yo-NG" : language === "pcm" ? "en-NG" : "en-NG"
@@ -256,7 +272,7 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
                     message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
                   )}
                 >
-                  {message.content}
+                  {extractMessageContent(message)}
                 </div>
               </div>
             ))}

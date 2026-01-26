@@ -120,6 +120,8 @@ export function AboutContent() {
     language === "en" ? aboutTexts.en :
     language === "yo" ? aboutTexts.yo :
     language === "pcm" ? aboutTexts.pcm :
+    language === "ha" ? aboutTexts.en :
+    language === "ig" ? aboutTexts.en :
     aboutTexts.en
 
   return (
