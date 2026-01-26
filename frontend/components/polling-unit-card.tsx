@@ -43,7 +43,7 @@ export function PollingUnitCard({ pollingUnit, showDirections = true }: PollingU
                     {pollingUnit.name}
                   </h3>
                 </Link>
-                <p className="text-sm text-muted-foreground truncate">{pollingUnit.address || t.location}</p>
+                <p className="text-sm text-muted-foreground truncate">{pollingUnit.address || "Location not available"}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1">
                     <span className="font-medium">{pollingUnit.code}</span>
@@ -55,7 +55,7 @@ export function PollingUnitCard({ pollingUnit, showDirections = true }: PollingU
                   )}
                   <span className="inline-flex items-center gap-1">
                     <Users className="h-3 w-3" />
-                    {pollingUnit.registered_voters.toLocaleString()} {t.registeredVoters.toLowerCase()}
+                    {(pollingUnit.registered_voters || 0).toLocaleString()} {t.registeredVoters.toLowerCase()}
                   </span>
                 </div>
               </div>

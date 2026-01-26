@@ -113,7 +113,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
                       <div>
                         <p className="text-sm text-muted-foreground">{t.registeredVoters}</p>
                         <p className="font-semibold text-foreground">
-                          {pollingUnit.registered_voters.toLocaleString()}
+                          {(pollingUnit.registered_voters || 0).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -123,7 +123,7 @@ export function PollingUnitDetails({ pollingUnit }: PollingUnitDetailsProps) {
                         <MapPin className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">{t.location}</p>
+                        <p className="text-sm text-muted-foreground">Location</p>
                         <p className="font-semibold text-foreground">{pollingUnit.address || t.lgaLabel}</p>
                       </div>
                     </div>
