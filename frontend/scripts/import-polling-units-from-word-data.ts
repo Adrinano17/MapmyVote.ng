@@ -40,6 +40,13 @@ if (supabaseUrl && supabaseKey) {
   }
 }
 
+// Type definitions
+type Ward = {
+  id: string
+  code: string
+  name: string
+}
+
 // Helper function to convert DMS to decimal degrees
 function dmsToDecimal(dms: string): number | null {
   // Format: 7°22'47.9"N or 3°53'55.3"E
@@ -461,7 +468,7 @@ async function importPollingUnits(dryRun: boolean = false) {
       return
     }
 
-    const wardMap = new Map(wards?.map(w => [w.code, w]) || [])
+    const wardMap = new Map((wards as Ward[] | null)?.map(w => [w.code, w]) || [])
     console.log(`\nFound ${wardMap.size} wards in database:`)
     wardMap.forEach((ward, code) => {
       console.log(`  ${code}: ${ward.name}`)
