@@ -541,7 +541,7 @@ async function importPollingUnits(dryRun: boolean = false) {
 
         if (existing) {
           // Update existing
-          // @ts-expect-error - Supabase types don't properly infer table schema
+          // @ts-ignore - Supabase types don't properly infer table schema
           const { error } = await supabase
             .from("polling_units")
             .update(pollingUnitData)
@@ -558,7 +558,7 @@ async function importPollingUnits(dryRun: boolean = false) {
           }
         } else {
           // Create new
-          // @ts-expect-error - Supabase types don't properly infer table schema
+          // @ts-ignore - Supabase types don't properly infer table schema
           const { error } = await supabase
             .from("polling_units")
             .insert(pollingUnitData)
