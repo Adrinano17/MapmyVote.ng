@@ -69,7 +69,7 @@ export function HomeContent({ wards, pollingUnitCount }: HomeContentProps) {
               <p className="text-sm text-muted-foreground">{t.pollingUnits}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary md:text-4xl">3</p>
+              <p className="text-3xl font-bold text-primary md:text-4xl">5</p>
               <p className="text-sm text-muted-foreground">{t.languages}</p>
             </div>
             <div className="text-center">

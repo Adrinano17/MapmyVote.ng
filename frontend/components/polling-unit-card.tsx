@@ -24,7 +24,7 @@ export function PollingUnitCard({ pollingUnit, showDirections = true }: PollingU
     // #endregion
     if (hasCoordinates) {
       const params = new URLSearchParams({ code: pollingUnit.code })
-      window.location.href = `/navigate?${params.toString()}`
+      window.location.href = `/direction?${params.toString()}`
     }
   }
 

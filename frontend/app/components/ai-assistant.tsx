@@ -122,6 +122,57 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
     return ""
   }, [])
 
+  // Render message content with clickable links
+  const renderMessageContent = useCallback((message: any) => {
+    const content = extractContentFromMessage(message)
+    if (!content) return null
+
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|\/direction\?[^\s]+|\/map\?[^\s]+)/gi
+    const parts = []
+    let lastIndex = 0
+    let match
+
+    while ((match = urlRegex.exec(content)) !== null) {
+      // Add text before URL
+      if (match.index > lastIndex) {
+        parts.push(content.substring(lastIndex, match.index))
+      }
+
+      // Add clickable link
+      const url = match[0].startsWith('http') ? match[0] : 
+                  match[0].startsWith('/') ? `${typeof window !== 'undefined' ? window.location.origin : ''}${match[0]}` :
+                  `https://${match[0]}`
+      
+      parts.push(
+        <a
+          key={match.index}
+          href={url}
+          target={url.startsWith('http') ? "_blank" : "_self"}
+          rel="noopener noreferrer"
+          className="text-primary underline hover:text-primary/80 break-all"
+          onClick={(e) => {
+            if (!url.startsWith('http')) {
+              e.preventDefault()
+              window.location.href = url
+            }
+          }}
+        >
+          {match[0]}
+        </a>
+      )
+
+      lastIndex = match.index + match[0].length
+    }
+
+    // Add remaining text
+    if (lastIndex < content.length) {
+      parts.push(content.substring(lastIndex))
+    }
+
+    return parts.length > 0 ? <>{parts}</> : content
+  }, [extractContentFromMessage])
+
 
   // Track which messages have been spoken to avoid duplicates
   const spokenMessageIdsRef = useRef<Set<string>>(new Set())
@@ -489,7 +540,7 @@ export function AIAssistant({ initialContext }: AIAssistantProps) {
                     message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
                   )}
                 >
-                  {extractContentFromMessage(message)}
+                  {message.role === "assistant" ? renderMessageContent(message) : extractContentFromMessage(message)}
                 </div>
               </div>
             ))}

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import type { PollingUnit, Ward } from "@/lib/types"
-import { calculateDistance, formatDistance, formatDuration, IBADAN_NORTH_CENTER } from "@/lib/map-utils"
+import { calculateDistance, formatDistance, formatDuration, IBADAN_NORTH_CENTER, adjustDurationForNigeria } from "@/lib/map-utils"
 
 interface RouteStep {
   instruction: string
@@ -243,10 +243,13 @@ export function MapboxMap({
           padding: { top: 50, bottom: 150, left: 50, right: 50 },
         })
 
+        // Apply Nigerian correction factor to duration for more accurate local estimates
+        const adjustedDuration = adjustDurationForNigeria(route.duration)
+
         // Update route info
         setRouteInfo({
           distance: route.distance,
-          duration: route.duration,
+          duration: adjustedDuration,
         })
 
         // Convert route steps
@@ -258,7 +261,7 @@ export function MapboxMap({
           }) => ({
             instruction: step.maneuver.instruction,
             distance: step.distance,
-            duration: step.duration,
+            duration: adjustDurationForNigeria(step.duration),
             coordinates: {
               lat: step.maneuver.location[1],
               lng: step.maneuver.location[0],

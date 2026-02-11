@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { adjustDurationForNigeria } from "@/lib/map-utils"
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,6 +72,10 @@ export async function POST(req: NextRequest) {
     const route = data.routes[0]
     const leg = route.legs[0]
     
+    // Apply Nigerian correction factor to duration for more accurate local estimates
+    // Accounts for: crowd density, narrow streets, markets, unpaved roads
+    const adjustedDuration = adjustDurationForNigeria(leg.duration)
+    
     // Mapbox returns geometry as encoded polyline string when geometries=polyline
     // This is compatible with Google's polyline encoding (same algorithm)
     const polylineString = route.geometry
@@ -80,13 +85,14 @@ export async function POST(req: NextRequest) {
       polylineLength: polylineString?.length || 0,
       distance: leg.distance,
       duration: leg.duration,
+      adjustedDuration: adjustedDuration,
     })
     
     return NextResponse.json({
       routes: [{
         legs: [{
           distance: { value: leg.distance, text: `${(leg.distance / 1000).toFixed(1)} km` },
-          duration: { value: leg.duration, text: `${Math.round(leg.duration / 60)} min` },
+          duration: { value: adjustedDuration, text: `${Math.round(adjustedDuration / 60)} min` },
           end_location: { lat: destination.lat, lng: destination.lng },
           start_location: { lat: origin.lat, lng: origin.lng },
           steps: (leg.steps || []).map((step: any, index: number) => {
@@ -108,7 +114,7 @@ export async function POST(req: NextRequest) {
                 lng: step.maneuver?.location?.[0] || stepLocation[0] 
               },
               distance: { value: step.distance, text: `${(step.distance / 1000).toFixed(1)} km` },
-              duration: { value: step.duration, text: `${Math.round(step.duration / 60)} min` },
+              duration: { value: adjustDurationForNigeria(step.duration), text: `${Math.round(adjustDurationForNigeria(step.duration) / 60)} min` },
               html_instructions: instruction,
               maneuver: {
                 type: maneuverType,

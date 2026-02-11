@@ -45,7 +45,14 @@ Language preference: ${language === "yo" ? "Yoruba" : language === "pcm" ? "Nige
 Important information:
 - Voting hours in Nigeria are typically 8:30 AM to 2:30 PM
 - Voters need their Permanent Voter Card (PVC) to vote
-- Ibadan North LGA has 12 wards with multiple polling units each`
+- Ibadan North LGA has 12 wards with multiple polling units each
+
+When providing polling unit information:
+- ALWAYS include the directions link (directionsUrl) when available
+- Format the link as: "View directions: [directionsUrl]"
+- The directionsUrl will be in the format: /direction?code=XXX
+- Make links clickable and easy to access
+- Example: "You can view the map and get turn-by-turn directions here: /direction?code=PU001"`
 
 export async function POST(req: Request) {
   try {
@@ -265,6 +272,7 @@ export async function POST(req: Request) {
                 hasCoordinates: !!(pu.latitude && pu.longitude),
                 latitude: pu.latitude,
                 longitude: pu.longitude,
+                directionsUrl: pu.code ? `/direction?code=${pu.code}` : null,
               })),
               wards: wards?.map((w) => ({ name: w.name, code: w.code })) || [],
             }
@@ -303,8 +311,8 @@ export async function POST(req: Request) {
               latitude: pollingUnit.latitude,
               longitude: pollingUnit.longitude,
               directionsUrl:
-                pollingUnit.latitude && pollingUnit.longitude
-                  ? `/map?lat=${pollingUnit.latitude}&lng=${pollingUnit.longitude}&code=${pollingUnit.code}`
+                pollingUnit.code
+                  ? `/direction?code=${pollingUnit.code}`
                   : null,
             }
           }
@@ -346,7 +354,7 @@ export async function POST(req: Request) {
       }),
 
       calculateTravelTime: tool({
-        description: "Calculate approximate travel time to a polling unit based on distance",
+        description: "Calculate approximate travel time to a polling unit based on distance. Uses Nigerian-optimized speeds and handles short distances specially.",
         inputSchema: z.object({
           userLat: z.number().describe("User latitude"),
           userLng: z.number().describe("User longitude"),
@@ -355,33 +363,36 @@ export async function POST(req: Request) {
           mode: z.enum(["walking", "driving"]).describe("Travel mode"),
         }),
         execute: async ({ userLat, userLng, destLat, destLng, mode }) => {
-          // Haversine formula for distance calculation
-          const R = 6371 // Earth's radius in km
-          const dLat = ((destLat - userLat) * Math.PI) / 180
-          const dLng = ((destLng - userLng) * Math.PI) / 180
-          const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos((userLat * Math.PI) / 180) *
-              Math.cos((destLat * Math.PI) / 180) *
-              Math.sin(dLng / 2) *
-              Math.sin(dLng / 2)
-          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-          const distance = R * c
+          // Import utilities (using dynamic import to avoid issues)
+          const { calculateDistance, estimateTravelTime, formatDistance, formatStraightLineDistance } = await import("@/lib/map-utils")
+          
+          // Calculate straight-line distance (Haversine)
+          const distanceMeters = calculateDistance(userLat, userLng, destLat, destLng)
+          const distanceKm = distanceMeters / 1000
 
-          // Estimate time based on mode
-          const speedKmPerHour = mode === "walking" ? 5 : 30
-          const timeMinutes = Math.round((distance / speedKmPerHour) * 60)
+          // Estimate time using Nigerian-optimized speeds
+          // This handles short distances (< 500m) specially
+          const timeMinutes = estimateTravelTime(distanceMeters, mode)
+
+          // Determine encouragement message
+          let encouragement: string
+          if (timeMinutes <= 5) {
+            encouragement = "You're very close! Just a short walk away."
+          } else if (timeMinutes <= 15) {
+            encouragement = "Not too far! You'll be there soon."
+          } else {
+            encouragement = "The journey is worth it - your vote matters!"
+          }
 
           return {
-            distanceKm: Math.round(distance * 10) / 10,
+            distanceKm: Math.round(distanceKm * 10) / 10,
+            distanceMeters: Math.round(distanceMeters),
+            distanceText: formatStraightLineDistance(distanceMeters),
             estimatedMinutes: timeMinutes,
+            timeRange: `${timeMinutes}–${timeMinutes + 2} minutes`,
             mode,
-            encouragement:
-              timeMinutes <= 5
-                ? "You're very close! Just a short walk away."
-                : timeMinutes <= 15
-                  ? "Not too far! You'll be there soon."
-                  : "The journey is worth it - your vote matters!",
+            encouragement,
+            note: "This is a straight-line distance estimate. Actual walking time may vary based on roads and obstacles.",
           }
         },
       }),

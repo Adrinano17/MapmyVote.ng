@@ -72,10 +72,13 @@ export function navigateToMapWithPollingUnit(
     params.append("code", pollingUnit.code)
   }
   
-  const mapUrl = `/navigate?${params.toString()}`
+  // Route to direction page with polling unit code
+  const mapUrl = pollingUnit.code 
+    ? `/direction?code=${pollingUnit.code}`
+    : `/map?${params.toString()}`
   
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'mapbox-navigation.ts:72',message:'Redirecting to navigation page',data:{url:mapUrl,params:params.toString()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'mapbox-navigation.ts:72',message:'Redirecting to direction page',data:{url:mapUrl,params:params.toString(),hasCode:!!pollingUnit.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
   // #endregion
   
   window.location.href = mapUrl

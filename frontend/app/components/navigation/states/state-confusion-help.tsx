@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useNavigationState } from "@/hooks/use-navigation-state"
 import { useVoiceGuidance } from "@/hooks/use-voice-guidance"
 import { useLanguage } from "@/hooks/use-language"
-import { MapPin, Navigation, ArrowLeft } from "lucide-react"
+import { MapPin, Navigation, ArrowLeft, ExternalLink } from "lucide-react"
 
 interface ConfusionHelpProps {
   nearestLandmark?: { name: string; distance: number }
@@ -14,9 +15,10 @@ interface ConfusionHelpProps {
 }
 
 export function StateConfusionHelp({ nearestLandmark, userLocation }: ConfusionHelpProps) {
-  const { state, resumeNavigation, transitionTo } = useNavigationState()
+  const { state, context, resumeNavigation, transitionTo } = useNavigationState()
   const { language } = useLanguage()
   const { speak, config } = useVoiceGuidance()
+  const router = useRouter()
   const [hasSpoken, setHasSpoken] = useState(false)
 
   useEffect(() => {
@@ -50,6 +52,13 @@ export function StateConfusionHelp({ nearestLandmark, userLocation }: ConfusionH
 
   const handleRestart = () => {
     transitionTo("polling_unit_input")
+  }
+
+  const handleGoToDirections = () => {
+    const pollingUnitCode = context.pollingUnitCode
+    if (pollingUnitCode) {
+      router.push(`/direction?code=${pollingUnitCode}`)
+    }
   }
 
   return (
@@ -139,6 +148,21 @@ export function StateConfusionHelp({ nearestLandmark, userLocation }: ConfusionH
               ? "Continue Navigation"
               : "Continue Navigation"}
           </Button>
+
+          {context.pollingUnitCode && (
+            <Button 
+              onClick={handleGoToDirections} 
+              variant="default" 
+              className="w-full gap-2 bg-primary"
+            >
+              <ExternalLink className="h-4 w-4" />
+              {language === "yo"
+                ? "Wo Maapu"
+                : language === "pcm"
+                ? "See Map"
+                : "View Map & Directions"}
+            </Button>
+          )}
 
           <Button onClick={handleRestart} variant="outline" className="w-full gap-2">
             <ArrowLeft className="h-4 w-4" />

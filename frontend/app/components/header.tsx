@@ -47,12 +47,6 @@ export function Header() {
             {t.mapView}
           </Link>
           <Link
-            href="/navigate"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {language === "yo" ? "Ìtọ́sọ́nà" : language === "pcm" ? "Navigation" : "Navigate"}
-          </Link>
-          <Link
             href="/about"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -87,13 +81,6 @@ export function Header() {
               onClick={() => setIsMenuOpen(false)}
             >
               {t.mapView}
-            </Link>
-            <Link
-              href="/navigate"
-              className="text-sm font-medium text-muted-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {language === "yo" ? "Ìtọ́sọ́nà" : language === "pcm" ? "Navigation" : "Navigate"}
             </Link>
             <Link
               href="/about"

@@ -11,6 +11,7 @@ import { useNavigationState } from "@/hooks/use-navigation-state"
 import { getStateMachine, type StateContext } from "@/lib/state-machine"
 import { SimpleModeToggle } from "@/components/simple-mode-toggle"
 import type { PollingUnit, Ward } from "@/lib/types"
+import { calculateDistance, estimateTravelTime } from "@/lib/map-utils"
 
 function NavigatePageContent() {
   const searchParams = useSearchParams()
@@ -192,6 +193,7 @@ function NavigatePageContent() {
   const [landmarks, setLandmarks] = useState<Array<{ name: string; latitude: number; longitude: number; category: string; distance: number }>>([])
   const [distance, setDistance] = useState<number | undefined>()
   const [time, setTime] = useState<number | undefined>()
+  const [hasRouteData, setHasRouteData] = useState(false)
   const [simpleMode, setSimpleMode] = useState(false)
   const [gpsUnavailable, setGpsUnavailable] = useState(false)
   const [routingFailed, setRoutingFailed] = useState(false)
@@ -483,6 +485,10 @@ function NavigatePageContent() {
         fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navigate/page.tsx:365',message:'Starting route calculation (walking)',data:{originLat:userLocation.latitude,originLng:userLocation.longitude,destLat:pollingUnitData.latitude,destLng:pollingUnitData.longitude,profile:'walking'},timestamp:Date.now(),sessionId:'debug-session',runId:'run19',hypothesisId:'B'})}).catch(()=>{});
       }
       // #endregion
+      // Reset route data flag when starting new route calculation
+      setHasRouteData(false)
+      setRoutingFailed(false)
+      
       fetch("/api/directions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -526,6 +532,7 @@ function NavigatePageContent() {
             }
             // #endregion
             
+            setHasRouteData(true)
             setDistance(leg.distance.value)
             setTime(Math.round(leg.duration.value / 60)) // Convert to minutes
             // #region agent log
@@ -601,6 +608,7 @@ function NavigatePageContent() {
                 setRoutingFailed(true)
               })
                  } else {
+                   setHasRouteData(false)
                    setRoutingFailed(true)
                    // #region agent log
                    if (typeof window !== 'undefined') {
@@ -616,29 +624,31 @@ function NavigatePageContent() {
                    fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navigate/page.tsx:350',message:'Directions fetch error',data:{error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'Q'})}).catch(()=>{});
                  }
                  // #endregion
+                 setHasRouteData(false)
                  setRoutingFailed(true)
                })
     }
   }, [actualState, userLocation, pollingUnitData])
 
-  // Calculate distance to polling unit
+  // Calculate straight-line distance as fallback ONLY if route calculation failed
   useEffect(() => {
-    if (userLocation && pollingUnitData?.latitude && pollingUnitData.longitude) {
-      const R = 6371e3 // Earth radius in meters
-      const φ1 = (userLocation.latitude * Math.PI) / 180
-      const φ2 = ((pollingUnitData.latitude || 0) * Math.PI) / 180
-      const Δφ = (((pollingUnitData.latitude || 0) - userLocation.latitude) * Math.PI) / 180
-      const Δλ = (((pollingUnitData.longitude || 0) - userLocation.longitude) * Math.PI) / 180
-
-      const a =
-        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-      const distanceMeters = R * c
+    // Only use fallback if we don't have route data and routing failed
+    if (routingFailed && !hasRouteData && userLocation && pollingUnitData?.latitude && pollingUnitData.longitude) {
+      // Use improved utility functions with Nigerian-optimized speeds
+      const distanceMeters = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        pollingUnitData.latitude || 0,
+        pollingUnitData.longitude || 0
+      )
       setDistance(distanceMeters)
+      
+      // Estimate time using Nigerian-optimized walking speed (4 km/h)
+      // This handles short distances (< 500m) specially
+      const estimatedMinutes = estimateTravelTime(distanceMeters, "walking")
+      setTime(estimatedMinutes)
     }
-  }, [userLocation, pollingUnitData])
+  }, [routingFailed, hasRouteData, userLocation, pollingUnitData])
 
   // Mapbox uses [lng, lat] format
   const mapCenter: [number, number] | undefined =

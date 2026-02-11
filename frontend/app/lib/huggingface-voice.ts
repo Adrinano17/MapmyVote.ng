@@ -5,31 +5,47 @@
 
 export async function synthesizeSpeech(text: string, language: "en" | "yo" | "pcm"): Promise<AudioBuffer | null> {
   try {
-    const response = await fetch("/api/tts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text, language }),
-    })
+    // Create AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
+    
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text, language }),
+        signal: controller.signal,
+      })
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
-      throw new Error(errorData.error || "TTS API request failed")
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
+        throw new Error(errorData.error || "TTS API request failed")
+      }
+
+      const data = await response.json()
+
+      if (!data.audio) {
+        throw new Error("No audio data in response")
+      }
+
+      // Decode base64 audio
+      const audioData = Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0))
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const audioBuffer = await audioContext.decodeAudioData(audioData.buffer)
+
+      return audioBuffer
+    } catch (error: any) {
+      clearTimeout(timeoutId)
+      if (error.name === 'AbortError') {
+        console.error("TTS API request timed out")
+        throw new Error("TTS request timed out")
+      }
+      throw error
     }
-
-    const data = await response.json()
-
-    if (!data.audio) {
-      throw new Error("No audio data in response")
-    }
-
-    // Decode base64 audio
-    const audioData = Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0))
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const audioBuffer = await audioContext.decodeAudioData(audioData.buffer)
-
-    return audioBuffer
   } catch (error) {
     console.error("Speech synthesis error:", error)
     return null

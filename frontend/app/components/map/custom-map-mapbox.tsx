@@ -31,7 +31,8 @@ export function CustomMapMapbox({
   // #region agent log
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:30',message:'CustomMapMapbox component mounted',data:{hasPollingUnits:!!pollingUnits?.length,hasUserLocation:!!userLocation,hasRoutePolyline:!!routePolyline,hasMapContainer:!!mapContainer.current},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      const isMobile = window.innerWidth < 768
+      fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:30',message:'CustomMapMapbox component mounted',data:{isMobile,windowWidth:window.innerWidth,windowHeight:window.innerHeight,hasPollingUnits:!!pollingUnits?.length,hasUserLocation:!!userLocation,hasRoutePolyline:!!routePolyline,hasMapContainer:!!mapContainer.current,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     }
     return () => {
       if (typeof window !== 'undefined') {
@@ -61,6 +62,20 @@ export function CustomMapMapbox({
       // #region agent log
       if (typeof window !== 'undefined') {
         fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:52',message:'initializeMap early return',data:{hasMapContainer:!!mapContainer.current,hasMap:!!map.current,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      }
+      // #endregion
+      return
+    }
+    
+    // On mobile, allow initialization even with zero dimensions - Mapbox will resize when container gets dimensions
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const containerWidth = mapContainer.current.offsetWidth
+    const containerHeight = mapContainer.current.offsetHeight
+    
+    if (!isMobile && (containerWidth === 0 || containerHeight === 0)) {
+      // #region agent log
+      if (typeof window !== 'undefined') {
+        fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:dimension-check',message:'Skipping initialization - zero dimensions on desktop',data:{containerWidth,containerHeight,isMobile},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
       }
       // #endregion
       return
@@ -235,11 +250,15 @@ export function CustomMapMapbox({
       return
     }
     
+    // Check if we're on mobile
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    
     // Try to initialize immediately if container is ready
-    if (mapContainer.current && mapContainer.current.offsetWidth > 0 && mapContainer.current.offsetHeight > 0) {
+    // On mobile, allow initialization even with zero dimensions - Mapbox will resize when container gets dimensions
+    if (mapContainer.current && (isMobile || (mapContainer.current.offsetWidth > 0 && mapContainer.current.offsetHeight > 0))) {
       // #region agent log
       if (typeof window !== 'undefined') {
-        fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:211',message:'Container ready immediately - calling initializeMap',data:{hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:211',message:'Container ready immediately - calling initializeMap',data:{isMobile,hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
       }
       // #endregion
       initializeMap()
@@ -272,15 +291,24 @@ export function CustomMapMapbox({
     }
     
     // Fallback: periodic check if ResizeObserver not available or container not set yet
+    // On mobile, initialize after a few retries even if dimensions are zero
     let retryCount = 0
     const maxRetries = 100
+    const mobileInitRetries = 5 // On mobile, try to initialize after 5 retries even with zero dimensions
     const checkContainer = () => {
       if (map.current || mapInitializing) return
       
-      if (mapContainer.current && mapContainer.current.offsetWidth > 0 && mapContainer.current.offsetHeight > 0) {
+      const containerWidth = mapContainer.current?.offsetWidth || 0
+      const containerHeight = mapContainer.current?.offsetHeight || 0
+      const shouldInit = mapContainer.current && (
+        (containerWidth > 0 && containerHeight > 0) || // Normal case: has dimensions
+        (isMobile && retryCount >= mobileInitRetries) // Mobile: initialize after a few retries even with zero dimensions
+      )
+      
+      if (shouldInit) {
         // #region agent log
         if (typeof window !== 'undefined') {
-          fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:242',message:'Fallback check - container ready - calling initializeMap',data:{retryCount,hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+          fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:242',message:'Fallback check - container ready - calling initializeMap',data:{isMobile,retryCount,hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth,containerHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         }
         // #endregion
         if (timeoutId) clearTimeout(timeoutId)
@@ -292,7 +320,7 @@ export function CustomMapMapbox({
         } else {
           // #region agent log
           if (typeof window !== 'undefined') {
-            fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:252',message:'Max retries reached',data:{retryCount,hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:252',message:'Max retries reached',data:{isMobile,retryCount,hasMapContainer:!!mapContainer.current,hasMap:!!map.current,mapInitializing,containerWidth,containerHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
           }
           // #endregion
         }
@@ -325,6 +353,33 @@ export function CustomMapMapbox({
       }
     }
   }, [])
+
+  // Handle window resize to update map dimensions
+  useEffect(() => {
+    if (!map.current || !mapReady) return
+    
+    const handleResize = () => {
+      if (map.current && mapContainer.current) {
+        // #region agent log
+        if (typeof window !== 'undefined') {
+          fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'custom-map-mapbox.tsx:resize-handler',message:'Window resize - calling map.resize()',data:{containerWidth:mapContainer.current?.offsetWidth,containerHeight:mapContainer.current?.offsetHeight,windowWidth:window.innerWidth,windowHeight:window.innerHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        }
+        // #endregion
+        map.current.resize()
+      }
+    }
+    
+    window.addEventListener('resize', handleResize)
+    // Also trigger resize after a short delay to handle overlay state changes
+    const timeout = setTimeout(() => {
+      handleResize()
+    }, 150)
+    
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(timeout)
+    }
+  }, [mapReady])
 
   // Update map center and zoom
   useEffect(() => {

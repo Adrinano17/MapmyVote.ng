@@ -140,7 +140,7 @@ export const translations: Record<Language, Translations> = {
     // Hero Section
     heroTitle: "Find Your Polling Unit",
     heroSubtitle:
-      "Locate your assigned voting location in Ibadan North LGA. Search by name, ward, or use voice commands in English, Yoruba, or Pidgin.",
+      "Locate your assigned voting location in Ibadan North LGA. Search by name, ward, or use voice commands in English, Yoruba, Pidgin, Hausa, or Igbo.",
     browseMap: "Browse Map",
     voiceSearch: "Voice Search",
     lgaLabel: "Ibadan North Local Government Area",
@@ -351,7 +351,7 @@ export const translations: Record<Language, Translations> = {
     // Hero Section
     heroTitle: "Find Where You Go Vote",
     heroSubtitle:
-      "Find di place wey dem assign you to vote for Ibadan North LGA. Search by name, ward, or use voice for English, Yoruba, or Pidgin.",
+      "Find di place wey dem assign you to vote for Ibadan North LGA. Search by name, ward, or use voice for English, Yoruba, Pidgin, Hausa, or Igbo.",
     browseMap: "Check Map",
     voiceSearch: "Talk to Search",
     lgaLabel: "Ibadan North Local Government",

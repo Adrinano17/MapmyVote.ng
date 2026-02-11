@@ -57,7 +57,7 @@ export function StateNavigation({
   const wrongDirectionWarningRef = useRef(false)
   const lastSpokenInstructionRef = useRef<string>("") // Track last spoken instruction to avoid repeats
 
-  // Enable voice guidance when navigation starts and announce start
+  // Enable voice guidance when navigation starts and announce start with time and distance
   useEffect(() => {
     if (state === "navigation" && !hasSpoken) {
       // Ensure voice is enabled for navigation
@@ -71,18 +71,43 @@ export function StateNavigation({
         // #endregion
       }
       
-      const message =
-        language === "yo"
-          ? "A ti bẹ̀rẹ̀ ìtọ́sọ́nà. Tẹ̀síwájú ní ìgbésẹ̀ kan lẹ́yìn ìgbésẹ̀ kan."
-          : language === "pcm"
-          ? "We don start navigation. Continue step by step."
-          : "Navigation started. Follow the directions step by step."
+      // Build message with time and distance if available
+      let message = ""
+      if (distance !== undefined && time !== undefined) {
+        const distanceText = distance < 1000 
+          ? `${Math.round(distance)} meters`
+          : `${(distance / 1000).toFixed(1)} kilometers`
+        const timeText = `${time} ${time === 1 ? 'minute' : 'minutes'}`
+        
+        if (language === "yo") {
+          message = `A ti bẹ̀rẹ̀ ìtọ́sọ́nà. Ijinlẹ̀ jẹ́ ${distanceText}, àkókò jẹ́ ${timeText}. Tẹ̀síwájú ní ìgbésẹ̀ kan lẹ́yìn ìgbésẹ̀ kan.`
+        } else if (language === "pcm") {
+          message = `We don start navigation. Distance na ${distanceText}, time na ${timeText}. Continue step by step.`
+        } else if (language === "ha") {
+          message = `An fara navigation. Nisa shine ${distanceText}, lokaci shine ${timeText}. Ci gaba daidai.`
+        } else if (language === "ig") {
+          message = `Anyị amalite navigation. Ebe dị anyị bụ ${distanceText}, oge bụ ${timeText}. Gaa n'ihu n'usoro.`
+        } else {
+          message = `Navigation started. Distance is ${distanceText}, time is ${timeText}. Follow the directions step by step.`
+        }
+      } else {
+        message =
+          language === "yo"
+            ? "A ti bẹ̀rẹ̀ ìtọ́sọ́nà. Tẹ̀síwájú ní ìgbésẹ̀ kan lẹ́yìn ìgbésẹ̀ kan."
+            : language === "pcm"
+            ? "We don start navigation. Continue step by step."
+            : language === "ha"
+            ? "An fara navigation. Ci gaba daidai."
+            : language === "ig"
+            ? "Anyị amalite navigation. Gaa n'ihu n'usoro."
+            : "Navigation started. Follow the directions step by step."
+      }
 
       // Always speak the start message (force if voice not enabled)
       speak(message, { force: true })
       setHasSpoken(true)
     }
-  }, [state, hasSpoken, config.enabled, speak, language])
+  }, [state, hasSpoken, config.enabled, speak, language, distance, time])
 
   // Generate navigation instructions when landmarks are available
   useEffect(() => {
@@ -208,8 +233,28 @@ export function StateNavigation({
                 fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'state-navigation.tsx:useEffect',message:'Speaking turn-by-turn instruction',data:{instruction:turnByTurnInstruction.instruction,maneuverType:turnByTurnInstruction.maneuverType,distance:turnByTurnInstruction.distance,isUpcoming:turnByTurnInstruction.isUpcoming,voiceEnabled:config.enabled},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
               }
               // #endregion
+              // Build instruction with remaining distance and time if available
+              let instructionToSpeak = turnByTurnInstruction.instruction
+              if (distance !== undefined && time !== undefined) {
+                const distanceText = distance < 1000 
+                  ? `${Math.round(distance)} meters`
+                  : `${(distance / 1000).toFixed(1)} kilometers`
+                const timeText = `${time} ${time === 1 ? 'minute' : 'minutes'}`
+                
+                if (language === "yo") {
+                  instructionToSpeak = `${turnByTurnInstruction.instruction} Ijinlẹ̀ tó kù jẹ́ ${distanceText}, àkókò tó kù jẹ́ ${timeText}.`
+                } else if (language === "pcm") {
+                  instructionToSpeak = `${turnByTurnInstruction.instruction} Distance wey remain na ${distanceText}, time wey remain na ${timeText}.`
+                } else if (language === "ha") {
+                  instructionToSpeak = `${turnByTurnInstruction.instruction} Nisa da ya rage shine ${distanceText}, lokaci da ya rage shine ${timeText}.`
+                } else if (language === "ig") {
+                  instructionToSpeak = `${turnByTurnInstruction.instruction} Ebe fọdụrụ bụ ${distanceText}, oge fọdụrụ bụ ${timeText}.`
+                } else {
+                  instructionToSpeak = `${turnByTurnInstruction.instruction} Remaining distance is ${distanceText}, remaining time is ${timeText}.`
+                }
+              }
               // Always speak turn-by-turn instructions (force if voice not enabled)
-              speak(turnByTurnInstruction.instruction, { force: true })
+              speak(instructionToSpeak, { force: true })
               lastSpokenInstructionRef.current = turnByTurnInstruction.instruction
             }
           } else if (turnByTurnInstruction.maneuverType === "continue" && turnByTurnInstruction.distance <= 200 && lastSpokenInstructionRef.current !== turnByTurnInstruction.instruction) {
@@ -497,7 +542,15 @@ export function StateNavigation({
           </Button>
 
           {!simpleMode && (
-            <Button onClick={handleNeedHelp} variant="outline" className="w-full gap-2">
+            <Button 
+              onClick={handleNeedHelp} 
+              onTouchEnd={(e) => {
+                e.preventDefault()
+                handleNeedHelp()
+              }}
+              variant="outline" 
+              className="w-full gap-2 touch-manipulation"
+            >
               <AlertCircle className="h-4 w-4" />
               {language === "yo"
                 ? "Mo Dáa Lọ́nà"
