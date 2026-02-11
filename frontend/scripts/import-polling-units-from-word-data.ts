@@ -47,6 +47,16 @@ type Ward = {
   name: string
 }
 
+type PollingUnitData = {
+  code: string
+  name: string
+  address: string | null
+  ward_id: string
+  latitude: number | null
+  longitude: number | null
+  registered_voters: number
+}
+
 // Helper function to convert DMS to decimal degrees
 function dmsToDecimal(dms: string): number | null {
   // Format: 7°22'47.9"N or 3°53'55.3"E
@@ -519,7 +529,7 @@ async function importPollingUnits(dryRun: boolean = false) {
           .eq("code", pu.code)
           .single()
 
-        const pollingUnitData: any = {
+        const pollingUnitData: PollingUnitData = {
           code: pu.code,
           name: pu.name,
           address: pu.address,
@@ -533,7 +543,7 @@ async function importPollingUnits(dryRun: boolean = false) {
           // Update existing
           const { error } = await supabase
             .from("polling_units")
-            .update(pollingUnitData)
+            .update(pollingUnitData as any)
             .eq("code", pu.code)
 
           if (error) {
@@ -549,7 +559,7 @@ async function importPollingUnits(dryRun: boolean = false) {
           // Create new
           const { error } = await supabase
             .from("polling_units")
-            .insert(pollingUnitData)
+            .insert(pollingUnitData as any)
 
           if (error) {
             console.error(`✗ Error creating ${pu.code}:`, error.message)
