@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense } from "react"
+import { motion } from "framer-motion"
 import { SearchBox } from "@/components/search-box"
 import { PollingUnitCard } from "@/components/polling-unit-card"
 import { SearchIcon, MapPin } from "lucide-react"
@@ -8,6 +9,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/hooks/use-language"
 import { translations, type PollingUnit, type Ward } from "@/lib/types"
+import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations"
 
 interface SearchResultsContentProps {
   query: string
@@ -57,17 +59,27 @@ export function SearchResultsContent({ query, pollingUnits }: SearchResultsConte
               </div>
 
               {pollingUnits.length > 0 ? (
-                <div className="space-y-4">
-                  {pollingUnits.map((pu) => (
-                    <PollingUnitCard
+                <motion.div
+                  className="space-y-4"
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {pollingUnits.map((pu, index) => (
+                    <motion.div
                       key={pu.id}
-                      pollingUnit={{
-                        ...pu,
-                        ward: pu.ward || undefined,
-                      }}
-                    />
+                      variants={staggerItem}
+                      custom={index}
+                    >
+                      <PollingUnitCard
+                        pollingUnit={{
+                          ...pu,
+                          ward: pu.ward || undefined,
+                        }}
+                      />
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               ) : (
                 <div className="rounded-xl border border-dashed border-border p-12 text-center">
                   <SearchIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />

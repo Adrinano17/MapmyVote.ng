@@ -26,7 +26,7 @@ export function LanguageSelector() {
           <span className="hidden sm:inline">{currentLang.native}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="min-w-[180px]">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}

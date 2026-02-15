@@ -2,11 +2,13 @@
 
 import { MapPin, Users, Navigation, ChevronRight } from "lucide-react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useLanguage } from "@/hooks/use-language"
 import { translations, type PollingUnit, type Ward } from "@/lib/types"
 import { navigateToMapWithPollingUnit } from "@/lib/mapbox-navigation"
+import { fadeInUp, cardHover } from "@/lib/animations"
 
 interface PollingUnitCardProps {
   pollingUnit: PollingUnit & { ward?: Ward }
@@ -31,8 +33,15 @@ export function PollingUnitCard({ pollingUnit, showDirections = true }: PollingU
   }
 
   return (
-    <Card className="group transition-all hover:shadow-md">
-      <CardContent className="p-4">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fadeInUp}
+      whileHover={cardHover}
+      className="h-full"
+    >
+      <Card className="group h-full transition-all hover:shadow-md">
+        <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
@@ -79,5 +88,6 @@ export function PollingUnitCard({ pollingUnit, showDirections = true }: PollingU
         </div>
       </CardContent>
     </Card>
+    </motion.div>
   )
 }
