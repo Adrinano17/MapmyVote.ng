@@ -1,4 +1,4 @@
-import { Variants } from "framer-motion"
+import { Variants, TargetAndTransition } from "framer-motion"
 
 // Common animation variants
 export const fadeIn: Variants = {
@@ -112,17 +112,17 @@ export const pageTransition: Variants = {
 }
 
 // Card hover animation
-export const cardHover = {
+export const cardHover: TargetAndTransition = {
   scale: 1.02,
   y: -4,
   transition: {
     duration: 0.2,
-    ease: "easeOut"
+    ease: "easeOut" as const
   }
 }
 
 // Button tap animation
-export const buttonTap = {
+export const buttonTap: TargetAndTransition = {
   scale: 0.95,
   transition: {
     duration: 0.1
