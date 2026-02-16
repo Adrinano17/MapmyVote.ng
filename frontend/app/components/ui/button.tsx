@@ -5,13 +5,13 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { buttonTap } from "@/lib/animations"
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd"> {
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
   size?: "default" | "sm" | "lg" | "icon"
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", ...props }, ref) => {
+  ({ className, variant = "default", size = "default", onDrag, onDragStart, onDragEnd, ...props }, ref) => {
     return (
       <motion.button
         whileTap={buttonTap}
