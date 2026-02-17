@@ -29,6 +29,47 @@ export function GoogleMapsSidebar({
   const [selectedMode, setSelectedMode] = useState<TravelMode>("walking")
   const [showDetails, setShowDetails] = useState(false)
 
+  const handleCopyLink = async () => {
+    try {
+      const currentUrl = window.location.href
+      await navigator.clipboard.writeText(currentUrl)
+      // You could add a toast notification here
+      alert("Link copied to clipboard!")
+    } catch (err) {
+      console.error("Failed to copy link:", err)
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea")
+      textArea.value = window.location.href
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
+      alert("Link copied to clipboard!")
+    }
+  }
+
+  const handleShare = async () => {
+    const shareData = {
+      title: destination?.name || "Directions",
+      text: `Directions to ${destination?.name || "destination"}`,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData)
+      } else {
+        // Fallback to copy link
+        handleCopyLink()
+      }
+    } catch (err) {
+      // User cancelled or error occurred, fallback to copy
+      if ((err as Error).name !== "AbortError") {
+        handleCopyLink()
+      }
+    }
+  }
+
   // Extract "via" roads from route steps
   const viaRoads = routeSteps
     ?.map((step) => {
@@ -160,11 +201,17 @@ export function GoogleMapsSidebar({
       {/* Action Buttons */}
       <div className="px-4 py-3 space-y-2 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2">
-          <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+          <button 
+            onClick={handleShare}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
+          >
             <Share2 className="h-4 w-4" />
             Send directions
           </button>
-          <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+          <button 
+            onClick={handleCopyLink}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
+          >
             <Copy className="h-4 w-4" />
             Copy link
           </button>

@@ -28,6 +28,46 @@ export function MobileDirectionsView({
   const router = useRouter()
   const [selectedMode, setSelectedMode] = useState<TravelMode>("walking")
 
+  const handleCopyLink = async () => {
+    try {
+      const currentUrl = window.location.href
+      await navigator.clipboard.writeText(currentUrl)
+      alert("Link copied to clipboard!")
+    } catch (err) {
+      console.error("Failed to copy link:", err)
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea")
+      textArea.value = window.location.href
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
+      alert("Link copied to clipboard!")
+    }
+  }
+
+  const handleShare = async () => {
+    const shareData = {
+      title: destination?.name || "Directions",
+      text: `Directions to ${destination?.name || "destination"}`,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData)
+      } else {
+        // Fallback to copy link
+        handleCopyLink()
+      }
+    } catch (err) {
+      // User cancelled or error occurred, fallback to copy
+      if ((err as Error).name !== "AbortError") {
+        handleCopyLink()
+      }
+    }
+  }
+
   // Extract "via" roads from route steps
   const viaRoads = routeSteps
     ?.map((step) => {
@@ -214,15 +254,17 @@ export function MobileDirectionsView({
       {/* Bottom Action Buttons */}
       <div className="sticky bottom-0 bg-background border-t border-border px-4 py-3 mt-auto">
         <div className="flex items-center gap-3">
-          <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+          <button 
+            onClick={onClose}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors cursor-pointer"
+          >
             <Map className="h-4 w-4" />
             Preview
           </button>
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors">
-            <Plus className="h-4 w-4" />
-            Add stops
-          </button>
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors">
+          <button 
+            onClick={handleShare}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors cursor-pointer"
+          >
             <Share2 className="h-4 w-4" />
             Share
           </button>
