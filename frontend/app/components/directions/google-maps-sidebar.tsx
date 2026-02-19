@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { MapPin, Navigation, Car, Bike, Bus, ChevronRight, Map, List, Share2, Copy, Menu } from "lucide-react"
 import { formatDistance, formatDurationWithRange, formatDuration } from "@/lib/map-utils"
 import type { PollingUnit, Ward } from "@/lib/types"
@@ -28,6 +28,7 @@ export function GoogleMapsSidebar({
 }: GoogleMapsSidebarProps) {
   const [selectedMode, setSelectedMode] = useState<TravelMode>("walking")
   const [showDetails, setShowDetails] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
 
   const handleCopyLink = async () => {
     try {
@@ -89,7 +90,11 @@ export function GoogleMapsSidebar({
   ]
 
   return (
-    <div className="flex flex-col h-full bg-background overflow-hidden" style={{ height: '100%', maxHeight: '100%' }}>
+    <div 
+      ref={sidebarRef}
+      className="flex flex-col h-full bg-background overflow-hidden overflow-y-auto" 
+      style={{ height: '100%', maxHeight: '100%' }}
+    >
       {/* Top Menu Bar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border flex-shrink-0">
         <button className="p-2 hover:bg-muted rounded-lg transition-colors">
@@ -180,13 +185,27 @@ export function GoogleMapsSidebar({
                     setShowDetails(!showDetails)
                     onShowDetails?.()
                   }}
-                  className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 rounded-md transition-colors"
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    showDetails 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-primary hover:bg-primary/10"
+                  }`}
                 >
                   <List className="h-4 w-4 inline mr-1" />
                   Details
                 </button>
                 <button
-                  onClick={onShowPreview}
+                  onClick={() => {
+                    // Scroll to top of sidebar to show route summary
+                    if (sidebarRef.current) {
+                      sidebarRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
+                    // Close details view if open
+                    if (showDetails) {
+                      setShowDetails(false)
+                    }
+                    onShowPreview?.()
+                  }}
                   className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 rounded-md transition-colors"
                 >
                   <Map className="h-4 w-4 inline mr-1" />
@@ -219,32 +238,41 @@ export function GoogleMapsSidebar({
       </div>
 
       {/* Route Steps (Details View) */}
-      {showDetails && routeSteps && routeSteps.length > 0 && (
+      {showDetails && (
         <div className="flex-1 overflow-y-auto px-4 py-3 min-h-0">
-          <div className="space-y-3">
-            {routeSteps.map((step, index) => (
-              <div key={index} className="flex items-start gap-3">
-                <div className="mt-1 flex-shrink-0">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-xs font-semibold text-primary">{index + 1}</span>
+          {routeSteps && routeSteps.length > 0 ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Turn-by-turn directions</h3>
+              {routeSteps.map((step, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="mt-1 flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-primary">{index + 1}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="text-sm text-foreground"
+                      dangerouslySetInnerHTML={{
+                        __html: step.html_instructions || step.instruction || `Step ${index + 1}`,
+                      }}
+                    />
+                    {step.distance && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatDistance(typeof step.distance === 'object' ? (step.distance.value || 0) : step.distance)}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className="text-sm text-foreground"
-                    dangerouslySetInnerHTML={{
-                      __html: step.html_instructions || step.instruction || `Step ${index + 1}`,
-                    }}
-                  />
-                  {step.distance && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDistance(typeof step.distance === 'object' ? (step.distance.value || 0) : step.distance)}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <List className="h-12 w-12 text-muted-foreground mb-3 opacity-50" />
+              <p className="text-sm text-muted-foreground">Route details will appear here</p>
+              <p className="text-xs text-muted-foreground mt-1">Waiting for route calculation...</p>
+            </div>
+          )}
         </div>
       )}
 

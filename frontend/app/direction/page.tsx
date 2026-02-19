@@ -44,6 +44,7 @@ function DirectionPageContent() {
           isNavigating: false,
           hasArrived: false,
           locationGranted: false,
+          userLocation: undefined, // Clear cached location
         })
         machine.transitionTo('welcome')
         // Save cleared state immediately
@@ -54,6 +55,25 @@ function DirectionPageContent() {
       }
     }
   }, [codeFromUrl])
+
+  // Clear any cached location from localStorage on mount (prevent stale location on PC)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedContext = localStorage.getItem("navigation_context")
+        if (savedContext) {
+          const context = JSON.parse(savedContext)
+          // Clear userLocation from saved context if it exists
+          if (context.userLocation) {
+            context.userLocation = undefined
+            localStorage.setItem("navigation_context", JSON.stringify(context))
+          }
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }, [])
   // #endregion
   
   // Protected page - requires code
@@ -236,10 +256,10 @@ function DirectionPageContent() {
             const leg = route.legs[0]
             
             setHasRouteData(true)
-            // Set distance and time from route - these should remain stable
-            // Only set once when route is first received (prevent recalculation)
-            setDistance((prevDistance) => prevDistance === undefined ? leg.distance.value : prevDistance)
-            setTime((prevTime) => prevTime === undefined ? Math.round(leg.duration.value / 60) : prevTime)
+            // Set initial distance and time from route
+            // These will be updated as user moves (see useEffect below)
+            setDistance(leg.distance.value)
+            setTime(Math.round(leg.duration.value / 60))
             
             if (route.overview_polyline?.points) {
               setRoutePolyline(route.overview_polyline.points)
@@ -327,6 +347,37 @@ function DirectionPageContent() {
       setTime(estimatedMinutes)
     }
   }, [routingFailed, hasRouteData, userLocation, pollingUnitData])
+
+  // Update distance and time as user moves (recalculate remaining distance)
+  // Only update after initial route has been fetched
+  useEffect(() => {
+    // Only update if we have route data, both locations, and route was already fetched
+    // Skip if route hasn't been fetched yet (to avoid overriding initial route values)
+    if (hasRouteData && routeFetchedRef.current && userLocation && pollingUnitData?.latitude && pollingUnitData.longitude) {
+      // Recalculate remaining distance from current location to destination
+      const remainingDistanceMeters = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        pollingUnitData.latitude || 0,
+        pollingUnitData.longitude || 0
+      )
+      
+      // Only update if distance changed significantly (more than 5 meters) to avoid constant updates
+      setDistance((prevDistance) => {
+        if (prevDistance === undefined) return remainingDistanceMeters
+        const diff = Math.abs(prevDistance - remainingDistanceMeters)
+        return diff > 5 ? remainingDistanceMeters : prevDistance
+      })
+      
+      // Recalculate time based on remaining distance
+      const estimatedMinutes = estimateTravelTime(remainingDistanceMeters, "walking")
+      setTime((prevTime) => {
+        if (prevTime === undefined) return estimatedMinutes
+        const diff = Math.abs(prevTime - estimatedMinutes)
+        return diff >= 1 ? estimatedMinutes : prevTime // Update if time changed by at least 1 minute
+      })
+    }
+  }, [userLocation, pollingUnitData, hasRouteData])
 
   // Voice navigation - provide turn-by-turn directions as user moves
   useEffect(() => {

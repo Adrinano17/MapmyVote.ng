@@ -33,6 +33,9 @@ export function useNavigationState() {
         fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'use-navigation-state.tsx:restore-check',message:'Checking restoration conditions',data:{currentUrl,codeFromUrl,hasCode:!!codeFromUrl,isNavigatePage:currentUrl === '/navigate',shouldClear:currentUrl === '/navigate' && !codeFromUrl,locationGranted:parsedContext.locationGranted,savedState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
         // #endregion
         
+        // Always clear userLocation from cached context (prevent stale location on PC)
+        parsedContext.userLocation = undefined
+        
         if (currentUrl === '/navigate' && !codeFromUrl) {
           // #region agent log
           fetch('http://127.0.0.1:7242/ingest/a0691e2c-cdd7-47b0-9342-76cf3ac06d2f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'use-navigation-state.tsx:restore',message:'No code in URL - forcing fresh navigation start during restoration',data:{hadPollingUnitCode:!!parsedContext.pollingUnitCode,hadPollingUnitData:!!parsedContext.pollingUnitData,locationGranted:parsedContext.locationGranted,savedState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
@@ -82,11 +85,14 @@ export function useNavigationState() {
     }
   }, [])
 
-  // Save state to localStorage whenever it changes
+  // Save state to localStorage whenever it changes (but never save userLocation)
   useEffect(() => {
     const machine = getStateMachine()
+    const contextToSave = { ...context }
+    // Never persist userLocation to localStorage (prevent caching across sessions)
+    contextToSave.userLocation = undefined
     localStorage.setItem("navigation_state", state)
-    localStorage.setItem("navigation_context", JSON.stringify(context))
+    localStorage.setItem("navigation_context", JSON.stringify(contextToSave))
   }, [state, context])
 
   const transitionTo = useCallback((newState: NavigationState) => {
