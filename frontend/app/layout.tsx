@@ -1,3 +1,7 @@
+/**
+ * © 2025 MapmyVote.ng. All rights reserved.
+ */
+
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"

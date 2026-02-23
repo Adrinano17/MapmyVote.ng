@@ -1,3 +1,7 @@
+/**
+ * © 2025 MapmyVote.ng. All rights reserved.
+ */
+
 import { NextRequest, NextResponse } from "next/server"
 import { adjustDurationForNigeria } from "@/lib/map-utils"
 

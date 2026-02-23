@@ -1,3 +1,7 @@
+/**
+ * © 2025 MapmyVote.ng. All rights reserved.
+ */
+
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"

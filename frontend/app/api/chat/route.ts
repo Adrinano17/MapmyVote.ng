@@ -1,3 +1,7 @@
+/**
+ * © 2025 MapmyVote.ng. All rights reserved.
+ */
+
 import { convertToModelMessages, streamText, tool, type UIMessage } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
 import { z } from "zod"
